@@ -55,8 +55,6 @@ public class PlayerCoinTracker : NetworkBehaviour
         }
 
         ulong clientId = player.OwnerClientId;
-
-        _playerCoins[clientId] = 0;
         StartCoroutine(CheckCoinsTimer(clientId));
     }
 
@@ -69,22 +67,11 @@ public class PlayerCoinTracker : NetworkBehaviour
     {
         Debug.Log("OnCoinCollected invoked");
 
-        ulong clientId = OwnerClientId;
-
-        if (!_playerCoins.ContainsKey(clientId))
-        {
-            Debug.Log("OnCoinCollected playerCoins ContainsKey failed");
-            return;
-        }
-
-        _playerCoins[clientId]++;
         CoinCount.Value++;
 
-        Debug.Log($"Player {clientId} coins: {_playerCoins[clientId]}");
-
-        if (_playerCoins[clientId] >= 3)
+        if (CoinCount.Value >= 3)
         {
-            Debug.Log($"Player {clientId} completed task");
+            Debug.Log($"Player {CoinCount} completed task");
         }
     }
 
@@ -94,7 +81,7 @@ public class PlayerCoinTracker : NetworkBehaviour
 
         yield return new WaitForSeconds(10f);
 
-        if (_playerCoins.ContainsKey(clientId) && _playerCoins[clientId] < 3)
+        if (CoinCount.Value < 3)
         {
             Debug.Log($"Player {clientId} failed task, kicking");
 

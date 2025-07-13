@@ -4037,6 +4037,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _collectibleCheckRadius: 0.5
+  _deathScreenPrefab: {fileID: 7233292410652498232, guid: a2b65100c9adef9488f2fef22eb4889b,
+    type: 3}
 --- !u!114 &-3704331387582516113
 MonoBehaviour:
   m_ObjectHideFlags: 0

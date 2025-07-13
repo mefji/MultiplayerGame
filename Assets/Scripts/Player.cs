@@ -12,6 +12,9 @@ public class Player : NetworkBehaviour
     [SerializeField] private PlayerCoinTracker _coinTracker;
     [SerializeField] private LayerMask _collectiblesLayerMask;
     [SerializeField] private float _collectibleCheckRadius = 0.5f;
+    [SerializeField] private GameObject _deathScreenPrefab;
+    private GameObject _deathScreenInstance;
+    private CanvasGroup _deathScreenGroup;
     private NetworkVariable<int> _healthPoints = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<FixedString128Bytes> _playerName = new NetworkVariable<FixedString128Bytes>("1", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private Animator _animator;
@@ -131,6 +134,11 @@ public class Player : NetworkBehaviour
         {
             _isDead = true;
 
+            if (IsOwner)
+            {
+                ShowDeathScreen();
+            }
+
             if (IsServer)
             {
                 Debug.Log($"{OwnerClientId} dropping coins on death.. ");
@@ -141,6 +149,11 @@ public class Player : NetworkBehaviour
             }
         }
 
+        if (IsOwner)
+        {
+            _deathScreenPrefab.SetActive(false);
+        }
+
     }
 
     private IEnumerator RespawnAfterDelay()
@@ -149,11 +162,25 @@ public class Player : NetworkBehaviour
         transform.position = Vector3.zero;
         _healthPoints.Value = 3;
         _isDead = false;
+
+        if (IsOwner)
+        {
+            ;
+        }
     }
+
+    private void ShowDeathScreen()
+    {
+        _deathScreenInstance = Instantiate(_deathScreenPrefab);
+        _deathScreenGroup = _deathScreenInstance.GetComponent<CanvasGroup>();
+    }
+
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+
+
     }
 
     private void Update()
@@ -204,6 +231,4 @@ public class Player : NetworkBehaviour
     {
         _animator.SetFloat("Speed", speed);
     }
-
-
 }
