@@ -149,11 +149,6 @@ public class Player : NetworkBehaviour
             }
         }
 
-        if (IsOwner)
-        {
-            _deathScreenPrefab.SetActive(false);
-        }
-
     }
 
     private IEnumerator RespawnAfterDelay()
@@ -165,22 +160,33 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            ;
+            HideDeathScreen();
         }
     }
 
     private void ShowDeathScreen()
     {
-        _deathScreenInstance = Instantiate(_deathScreenPrefab);
-        _deathScreenGroup = _deathScreenInstance.GetComponent<CanvasGroup>();
+        _deathScreenGroup.blocksRaycasts = true;
+        _deathScreenGroup.interactable = true;
     }
 
+    private void HideDeathScreen()
+    {
+        _deathScreenGroup.blocksRaycasts = true;
+        _deathScreenGroup.interactable = true;
+        _deathScreenInstance.SetActive(false);
+    }
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
 
-
+        if (_deathScreenInstance == null)
+        {
+            _deathScreenInstance = Instantiate(_deathScreenPrefab);
+            _deathScreenInstance.SetActive(false);
+            _deathScreenGroup = _deathScreenInstance.GetComponent<CanvasGroup>();
+        }
     }
 
     private void Update()
