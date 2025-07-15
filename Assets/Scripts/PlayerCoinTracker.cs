@@ -53,9 +53,6 @@ public class PlayerCoinTracker : NetworkBehaviour
         {
             return;
         }
-
-        ulong clientId = player.OwnerClientId;
-        StartCoroutine(CheckCoinsTimer(clientId));
     }
 
     public void OnCoinCountChanged(int previous, int current)
@@ -75,18 +72,5 @@ public class PlayerCoinTracker : NetworkBehaviour
         }
     }
 
-    private IEnumerator CheckCoinsTimer(ulong clientId)
-    {
-        Debug.Log("CheckCoinsTimer invoked");
-
-        yield return new WaitForSeconds(10f);
-
-        if (CoinCount.Value < 3)
-        {
-            Debug.Log($"Player {clientId} failed task, kicking");
-
-            // NetworkManager.Singleton.DisconnectClient(clientId);
-            // _playerCoins.Remove(clientId);
-        }
-    }
+   
 }

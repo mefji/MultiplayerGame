@@ -221,6 +221,8 @@ GameObject:
   - component: {fileID: 47134871384464543}
   - component: {fileID: 3165709490927028254}
   - component: {fileID: 6913834982410292300}
+  - component: {fileID: 1566907078229830326}
+  - component: {fileID: 1740912486668639396}
   m_Layer: 5
   m_Name: DeathCanvas
   m_TagString: Untagged
@@ -312,3 +314,28 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &1566907078229830326
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233292410652498232}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!114 &1740912486668639396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233292410652498232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161e9c89bbfc98b469e7da3573a8532d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1566907078229830326}
