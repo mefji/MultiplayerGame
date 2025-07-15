@@ -12,6 +12,11 @@ public class Player : NetworkBehaviour
     [SerializeField] private PlayerCoinTracker _coinTracker;
     [SerializeField] private LayerMask _collectiblesLayerMask;
     [SerializeField] private float _collectibleCheckRadius = 0.5f;
+    [SerializeField] private DeathScreenUI _deathScreenPrefab;
+    private int _rocketCount = 0;
+    private Vector3 _mapCenterPosition;
+    private DeathScreenUI _deathScreenInstance;
+    private CanvasGroup _deathScreenGroup;
     private NetworkVariable<int> _healthPoints = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<FixedString128Bytes> _playerName = new NetworkVariable<FixedString128Bytes>("1", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private Animator _animator;
@@ -39,6 +44,7 @@ public class Player : NetworkBehaviour
         {
             PlayerCameraFollow cameraFollow = GameObject.FindObjectOfType<PlayerCameraFollow>();
             cameraFollow.SetTarget(transform);
+            _deathScreenInstance = Instantiate(_deathScreenPrefab);
         }
 
         base.OnNetworkSpawn();
@@ -79,6 +85,22 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void AddRockets(int amount)
+    {
+        _rocketCount += amount;
+        Debug.Log($"[PLAYER] Получено ракет: {amount}, всего: {_rocketCount}");
+    }
+
+    public bool HasRockets()
+    {
+        return _rocketCount > 0;
+    }
+
+    public void UseRocket()
+    {
+        _rocketCount--;
+        Debug.Log($"[PLAYER] Ракета использована. Осталось: {_rocketCount}");
+    }
     private void CheckCollectibles()
     {
         if (_isDead)
@@ -121,8 +143,8 @@ public class Player : NetworkBehaviour
     private void OnHealthChanged(int previous, int current)
     {
         Debug.Log($"Player is dead.. {current}, {IsServer}, {_isDead}");
-        
-        if (_isDead) 
+
+        if (_isDead)
         {
             return;
         }
@@ -130,6 +152,11 @@ public class Player : NetworkBehaviour
         if (current <= 0)
         {
             _isDead = true;
+
+            if (IsOwner)
+            {
+                ShowDeathScreen();
+            }
 
             if (IsServer)
             {
@@ -142,18 +169,37 @@ public class Player : NetworkBehaviour
         }
 
     }
-
     private IEnumerator RespawnAfterDelay()
     {
         yield return new WaitForSeconds(3f);
-        transform.position = Vector3.zero;
+
+        _characterController.enabled = false;
+        transform.position = _mapCenterPosition;
+        _characterController.enabled = true;
+
         _healthPoints.Value = 3;
         _isDead = false;
+
+        if (IsOwner)
+        {
+            HideDeathScreen();
+        }
+    }
+
+    private void ShowDeathScreen()
+    {
+        _deathScreenInstance.Show();
+    }
+
+    private void HideDeathScreen()
+    {
+        _deathScreenInstance.Hide();
     }
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+
     }
 
     private void Update()
@@ -204,6 +250,4 @@ public class Player : NetworkBehaviour
     {
         _animator.SetFloat("Speed", speed);
     }
-
-
 }

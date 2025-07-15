@@ -5,12 +5,19 @@ public class RocketSpawner : NetworkBehaviour
 {
     [SerializeField] private GameObject _rocketPrefab;
     [SerializeField] private NetworkVariable<int> _rocketsLeft = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] private Transform[] _ammoSpawnPoints;
+    [SerializeField] private GameObject _rocketAmmoPrefab;
 
     private void Update()
     {
         if (!IsOwner)
         {
             return;
+        }
+
+        if (IsServer)
+        {
+            SpawnInitialAmmo();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -26,6 +33,15 @@ public class RocketSpawner : NetworkBehaviour
             {
                 Debug.Log("RocketSpawner: No rockets left!");
             }
+        }
+    }
+
+    private void SpawnInitialAmmo()
+    {
+        foreach (Transform point in _ammoSpawnPoints)
+        {
+            GameObject ammo = Instantiate(_rocketAmmoPrefab, point.position, Quaternion.identity);
+            ammo.GetComponent<NetworkObject>().Spawn();
         }
     }
 

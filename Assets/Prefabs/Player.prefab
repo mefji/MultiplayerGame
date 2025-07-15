@@ -4037,6 +4037,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _collectibleCheckRadius: 0.5
+  _deathScreenPrefab: {fileID: 1740912486668639396, guid: a2b65100c9adef9488f2fef22eb4889b,
+    type: 3}
 --- !u!114 &-3704331387582516113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4187,6 +4189,10 @@ MonoBehaviour:
     type: 3}
   _rocketsLeft:
     m_InternalValue: 3
+  _ammoSpawnPoints:
+  - {fileID: 8374148442318434051, guid: 9c6449495b0451246815841ba9be328a, type: 3}
+  _rocketAmmoPrefab: {fileID: 6186398360316334540, guid: 0a0244c8b9b8fea40b0b0336e66e56a1,
+    type: 3}
 --- !u!143 &2013662951923022395
 CharacterController:
   m_ObjectHideFlags: 0
