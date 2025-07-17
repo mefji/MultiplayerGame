@@ -4039,6 +4039,7 @@ MonoBehaviour:
   _collectibleCheckRadius: 0.5
   _deathScreenPrefab: {fileID: 1740912486668639396, guid: a2b65100c9adef9488f2fef22eb4889b,
     type: 3}
+  _rocketSpawner: {fileID: 9142208599162957648}
 --- !u!114 &-3704331387582516113
 MonoBehaviour:
   m_ObjectHideFlags: 0
