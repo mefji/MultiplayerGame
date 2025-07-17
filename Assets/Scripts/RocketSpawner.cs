@@ -8,16 +8,24 @@ public class RocketSpawner : NetworkBehaviour
     [SerializeField] private Transform[] _ammoSpawnPoints;
     [SerializeField] private GameObject _rocketAmmoPrefab;
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            SpawnInitialAmmo();
+        }
+    }
+
+    public void IncreaseRocketCount(int amount)
+    {
+        _rocketsLeft.Value += amount;
+    }
+
     private void Update()
     {
         if (!IsOwner)
         {
             return;
-        }
-
-        if (IsServer)
-        {
-            SpawnInitialAmmo();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
