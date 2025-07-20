@@ -12,9 +12,8 @@ public class RocketAmmo : Collectable
     private void Update()
     {
         _currentAngle += _rotationSpeed * Time.deltaTime;
-        transform.rotation = Quaternion.Euler(0f, _currentAngle, 0f);
+        transform.rotation = Quaternion.Euler(90f, _currentAngle, 0f);
     }
-
     public override void OnCollect(Player player)
     {
         Debug.Log($"OnCollect called for player {player.OwnerClientId}");

@@ -47,6 +47,7 @@ public class Coin : Collectable
             return;
         }
 
+        player.GetComponent<PlayerCoinTracker>().AddCoins(1);
         AudioSource.PlayClipAtPoint(_pickupSound, transform.position);  
         StartCoroutine(FlyUpAndShrink());
         _collected = true;

@@ -14,6 +14,7 @@ public class Rocket : NetworkBehaviour
     private Player _target;
     private Vector3 _defaultDirection;
 
+
     private void Start()
     {
         Invoke(nameof(DestroyRocket), _lifeTime);
@@ -36,9 +37,12 @@ public class Rocket : NetworkBehaviour
 
         if (distanceToTarget < 0.5f)
         {
-            ApplyDamageServerRpc(_target.OwnerClientId);
-            DestroyRocket();
-            return;
+            if (IsServer)
+            {
+                ApplyDamage(_target.OwnerClientId);
+                DestroyRocket();
+                return;
+            }
         }
 
         moveDirection = (_target.transform.position - transform.position).normalized;
@@ -86,8 +90,7 @@ public class Rocket : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void ApplyDamageServerRpc(ulong targetId)
+    private void ApplyDamage(ulong targetId)
     {
         if (Player.Players.TryGetValue(targetId, out Player targetPlayer))
         {
