@@ -10,7 +10,7 @@ public class RocketSpawner : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
+        if (IsServer && IsOwner)
         {
             SpawnInitialAmmo();
         }

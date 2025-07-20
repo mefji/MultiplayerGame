@@ -17,7 +17,7 @@ public class Player : NetworkBehaviour
     private int _rocketCount = 0;
     private Vector3 _mapCenterPosition;
     private DeathScreenUI _deathScreenInstance;
-    private NetworkVariable<int> _healthPoints = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private NetworkVariable<int> _healthPoints = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<FixedString128Bytes> _playerName = new NetworkVariable<FixedString128Bytes>("1", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private Animator _animator;
     private bool _isDead = false;
@@ -113,14 +113,11 @@ public class Player : NetworkBehaviour
         }
 
         Collider[] hits = Physics.OverlapSphere(transform.position, _collectibleCheckRadius, _collectiblesLayerMask);
-        Debug.Log($"OverlapSphere hit count: {hits.Length}");
 
         foreach (var hit in hits)
         {
-            Debug.Log($"Player hit object: {hit.gameObject.name}");
             if (hit.TryGetComponent<Collectable>(out var collectable))
             {
-                Debug.Log($"Found collectible on {hit.gameObject.name}");
                 collectable.OnCollect(this);
             }
         }
@@ -159,19 +156,19 @@ public class Player : NetworkBehaviour
         if (current <= 0)
         {
             _isDead = true;
+            _animator.SetBool("IsDead", true);
 
             if (IsOwner)
             {
                 ShowDeathScreen();
+                Debug.Log($"{OwnerClientId} starting respawn coroutine");
+                StartCoroutine(RespawnAfterDelay());
             }
 
             if (IsServer)
             {
                 Debug.Log($"{OwnerClientId} dropping coins on death.. ");
                 _coinTracker.DropCoinsOnDeath(transform.position);
-
-                Debug.Log($"{OwnerClientId} starting respawn coroutine");
-                StartCoroutine(RespawnAfterDelay());
             }
         }
 
@@ -183,15 +180,43 @@ public class Player : NetworkBehaviour
         _characterController.enabled = false;
         transform.position = _mapCenterPosition;
         _characterController.enabled = true;
-
-        _healthPoints.Value = 3;
-        _isDead = false;
-
-        if (IsOwner)
-        {
-            HideDeathScreen();
-        }
+        RestoreHealthServerRpc();
+        RespawnPostActionsServerRpc();
+        HideDeathScreen();
     }
+
+    [ServerRpc]
+    private void RestoreHealthServerRpc()
+    {
+        _healthPoints.Value = 3;
+    }
+
+    [ServerRpc]
+    private void RespawnPostActionsServerRpc()
+    {
+        RespawnPostActionsClientRpc();
+    }
+
+    [ClientRpc]
+    private void RespawnPostActionsClientRpc()
+    {
+        _isDead = false;
+        _animator.SetBool("IsDead", false);
+    }
+
+    [ClientRpc]
+    private void DisableCharacterControllerClientRpc()
+    {
+        _characterController.enabled = false;
+    }
+
+
+    [ClientRpc]
+    private void EnableCharacterControllerClientRpc()
+    {
+        _characterController.enabled = true;
+    }
+
 
     private void ShowDeathScreen()
     {

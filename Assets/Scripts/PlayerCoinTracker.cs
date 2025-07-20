@@ -9,6 +9,7 @@ public class PlayerCoinTracker : NetworkBehaviour
 {
     [SerializeField] private TMP_Text _coinText;
     [SerializeField] private GameObject _coinPrefab;
+    [SerializeField] private GameObject _physicsCoinPrefab;
     private ulong _clientId;
 
     public NetworkVariable<int> CoinCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -19,8 +20,19 @@ public class PlayerCoinTracker : NetworkBehaviour
         player.PlayerSpawned += OnPlayerSpawned;
     }
 
+    public void AddCoins(int amount)
+    {
+        if (!IsServer)
+        {
+            return;
+        }
+
+        CoinCount.Value += amount;
+    }
+
     public void DropCoinsOnDeath(Vector3 dropPosition)
     {
+        dropPosition.y += 3;
         Debug.Log($"Dropping coins at position {dropPosition}");
 
         var coins = CoinCount.Value;
@@ -36,12 +48,31 @@ public class PlayerCoinTracker : NetworkBehaviour
         for (int i = 0; i < coins; i++)
         {
             Debug.Log($"Spawning {i + 1} in {dropPosition}");
-            GameObject coin = Instantiate(_coinPrefab, dropPosition, Quaternion.identity);
+            GameObject coin = Instantiate(_physicsCoinPrefab, dropPosition, Quaternion.identity);
+
+            if (coin.TryGetComponent<Rigidbody>(out var rigidBody))
+            {
+                StartCoroutine(SetupRigidBody(rigidBody));
+            }
+
             coin.GetComponent<NetworkObject>().Spawn(true);
             Debug.Log($"[DropCoinsOnDeath] spawned coin {i + 1}");
         }
 
-       CoinCount.Value = 0;
+        CoinCount.Value = 0;
+    }
+
+    private IEnumerator SetupRigidBody(Rigidbody rigidBody)
+    {
+        yield return new WaitForFixedUpdate();
+        Vector3 randomDirection = Random.onUnitSphere;
+
+        if (randomDirection.y < 0f)
+        {
+            randomDirection.y *= -1f;
+        }
+
+        rigidBody.AddForce(randomDirection * Random.Range(2f, 4f), ForceMode.Impulse);
     }
 
 
