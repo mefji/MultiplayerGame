@@ -4008,7 +4008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3075402452
+  GlobalObjectIdHash: 175332646
   InScenePlacedSourceGlobalObjectIdHash: 175332646
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4041,6 +4041,8 @@ MonoBehaviour:
   _deathScreenPrefab: {fileID: 1740912486668639396, guid: a2b65100c9adef9488f2fef22eb4889b,
     type: 3}
   _rocketSpawner: {fileID: 9142208599162957648}
+  _pauseMenuPrefab: {fileID: 6545259296375170222, guid: f82daa9a7be21634fbf67260ce6e6150,
+    type: 3}
 --- !u!114 &-3704331387582516113
 MonoBehaviour:
   m_ObjectHideFlags: 0

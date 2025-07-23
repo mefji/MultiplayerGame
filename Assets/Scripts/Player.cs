@@ -14,9 +14,11 @@ public class Player : NetworkBehaviour
     [SerializeField] private float _collectibleCheckRadius = 0.5f;
     [SerializeField] private DeathScreenUI _deathScreenPrefab;
     [SerializeField] private RocketSpawner _rocketSpawner;
+    [SerializeField] private PauseMenu _pauseMenuPrefab;
     private int _rocketCount = 0;
     private Vector3 _mapCenterPosition;
     private DeathScreenUI _deathScreenInstance;
+    private PauseMenu _pauseMenuInstance;
     private NetworkVariable<int> _healthPoints = new NetworkVariable<int>(3, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<FixedString128Bytes> _playerName = new NetworkVariable<FixedString128Bytes>("1", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private Animator _animator;
@@ -45,6 +47,8 @@ public class Player : NetworkBehaviour
             PlayerCameraFollow cameraFollow = GameObject.FindObjectOfType<PlayerCameraFollow>();
             cameraFollow.SetTarget(transform);
             _deathScreenInstance = Instantiate(_deathScreenPrefab);
+            _pauseMenuInstance = Instantiate(_pauseMenuPrefab);
+            _pauseMenuInstance.HidePauseMenu();
         }
 
         base.OnNetworkSpawn();
@@ -244,6 +248,16 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
         {
             return;
+        }
+
+        if (_pauseMenuInstance.IsActive)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            _pauseMenuInstance.ShowPauseMenu();
         }
 
         if (Input.GetKeyDown(KeyCode.E))
