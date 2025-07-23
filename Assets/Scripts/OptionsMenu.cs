@@ -27,10 +27,9 @@ public class OptionsMenu : MonoBehaviour
 
     private void LoadSettings()
     {
-        _currentFPS = GameSettings.Instance.FPS;
-        _currentVSync = GameSettings.Instance.VSync;
+        GameSettings.Instance.Load();
 
-        _fpsDropdown.value = _currentFPS switch
+        _fpsDropdown.value = GameSettings.Instance.FPS switch
         {
             30 => 0,
             60 => 1,
@@ -38,12 +37,12 @@ public class OptionsMenu : MonoBehaviour
             _ => 1
         };
 
-        _vsyncToggle.isOn = _currentVSync;
+        _vsyncToggle.isOn = GameSettings.Instance.VSync;
     }
 
     private void SaveSettings()
     {
-        _currentFPS = _fpsDropdown.value switch
+        GameSettings.Instance.FPS = _fpsDropdown.value switch
         {
             0 => 30,
             1 => 60,
@@ -51,21 +50,13 @@ public class OptionsMenu : MonoBehaviour
             _ => 60
         };
 
-        _currentVSync = _vsyncToggle.isOn;
+        GameSettings.Instance.VSync = _vsyncToggle.isOn;
 
-        GameSettings.Instance.FPS = _currentFPS;
-        GameSettings.Instance.VSync = _currentVSync;
-        GameSettings.Instance.Save();
-
-        ApplySettings();
-        HideMenu();
+        GameSettings.Instance.Save();         
+        GameSettings.Instance.Apply();
+        HideMenu();                            
     }
 
-    private void ApplySettings()
-    {
-        Application.targetFrameRate = _currentFPS;
-        QualitySettings.vSyncCount = _currentVSync ? 1 : 0;
-    }
 
     private void HideMenu()
     {
